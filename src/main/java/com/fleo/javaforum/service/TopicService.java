@@ -48,6 +48,23 @@ public class TopicService {
         return topicMapper.toResponse(topic);
     }
 
+    public TopicResponse updateTopic(TopicRequest request, final long id) {
+        Topic currentTopic = findById(id);
+        Topic hydratedTopic = Topic.builder()
+                .name(request.name())
+                .content(request.content())
+                .solved(request.solved())
+                .createdAt(currentTopic.getCreatedAt())
+                .updatedAt(Instant.now())
+                .build();
+        return topicMapper.toResponse(hydratedTopic);
+    }
+
+    public void deleteTopic(final long id) {
+        Topic topicToDelete = findById(id);
+        topicRepository.delete(topicToDelete);
+    }
+
     private Topic findById(final long id) {
         return topicRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Topic not found"));
