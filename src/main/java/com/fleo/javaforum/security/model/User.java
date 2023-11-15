@@ -27,7 +27,9 @@ public class User implements UserDetails {
     private String password;
     @Column
     private Role role;
+    @Column
     private Instant createdAt;
+    @Column
     private Instant updatedAt;
 
 
