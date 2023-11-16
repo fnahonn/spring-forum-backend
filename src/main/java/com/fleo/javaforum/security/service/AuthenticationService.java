@@ -24,6 +24,9 @@ public class AuthenticationService {
     private UserRepository userRepository;
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -37,7 +40,10 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         user = userRepository.save(user);
+
         var jwt = jwtService.generateToken(user);
+
+        var refreshToken = refreshTokenService.createRefreshToken(user);
 
         var roles = user.getRole().getAuthorities().stream()
                 .map(SimpleGrantedAuthority::getAuthority)
@@ -47,7 +53,7 @@ public class AuthenticationService {
                 user.getEmail(),
                 roles,
                 jwt,
-                null,
+                refreshToken.getToken(),
                 TokenType.BEARER.name()
         );
     }
@@ -57,14 +63,21 @@ public class AuthenticationService {
 
         var user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Email or password"));
+
         var jwt = jwtService.generateToken(user);
+
+        var refreshToken = refreshTokenService.createRefreshToken(user);
+
+        var roles = user.getRole().getAuthorities().stream()
+                .map(SimpleGrantedAuthority::getAuthority)
+                .toList();
 
         return new AuthenticationResponse(
                 user.getId(),
                 user.getEmail(),
-                null,
+                roles,
                 jwt,
-                null,
+                refreshToken.getToken(),
                 TokenType.BEARER.name()
         );
     }
