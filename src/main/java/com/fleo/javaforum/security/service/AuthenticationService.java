@@ -18,17 +18,19 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class AuthenticationService {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JwtService jwtService, RefreshTokenService refreshTokenService, AuthenticationManager authenticationManager) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
+        this.authenticationManager = authenticationManager;
+    }
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
