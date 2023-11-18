@@ -1,16 +1,15 @@
 package com.fleo.javaforum.security.model;
 
 import com.fleo.javaforum.security.enums.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.util.Collection;
 
+@Entity
+@Table(name = "users") //"users" instead of "user" because "user" word is reserved by Postgresql
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
