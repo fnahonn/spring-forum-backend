@@ -12,11 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Set;
 
+@Component
 public class Http401UnauthorizedEntrypoint implements AuthenticationEntryPoint {
 
     private Logger log = LoggerFactory.getLogger(Http401UnauthorizedEntrypoint.class);
