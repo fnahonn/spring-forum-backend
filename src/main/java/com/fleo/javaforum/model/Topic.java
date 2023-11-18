@@ -28,6 +28,9 @@ public class Topic {
         this.updatedAt = builder.updatedAt;
     }
 
+    public Long getId() {
+        return this.id;
+    }
     public String getName() {
         return name;
     }
