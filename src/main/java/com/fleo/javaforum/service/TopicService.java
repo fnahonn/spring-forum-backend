@@ -70,7 +70,7 @@ public class TopicService {
         topicRepository.delete(topicToDelete);
     }
 
-    private Topic findById(final long id) {
+    public Topic findById(final long id) {
         return topicRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Topic not found"));
     }

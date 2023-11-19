@@ -49,6 +49,54 @@ public class Message {
         this.id = id;
     }
 
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(Topic topic) {
+        this.topic = topic;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public static MessageBuilder builder() { return new MessageBuilder();}
 
     public static final class MessageBuilder {
@@ -60,7 +108,7 @@ public class Message {
         private Instant createdAt;
         private Instant updatedAt;
 
-        public MessageBuilder setId(Long id) {
+        public MessageBuilder id(Long id) {
             this.id = id;
             return this;
         }
