@@ -1,5 +1,6 @@
 package com.fleo.javaforum.model;
 
+import com.fleo.javaforum.security.model.User;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -12,6 +13,7 @@ public class Topic {
     private Long id;
     private String name;
     private String content;
+    private User author;
     private boolean solved;
     private Instant createdAt;
     private Instant updatedAt;
@@ -23,6 +25,7 @@ public class Topic {
         this.id = builder.id;
         this.name = builder.name;
         this.content = builder.content;
+        this.author = builder.author;
         this.solved = builder.solved;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
@@ -45,6 +48,14 @@ public class Topic {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public boolean isSolved() {
@@ -77,6 +88,7 @@ public class Topic {
         private Long id;
         private String name;
         private String content;
+        private User author;
         private boolean solved;
         private Instant createdAt;
         private Instant updatedAt;
@@ -93,6 +105,11 @@ public class Topic {
 
         public TopicBuilder content(String content) {
             this.content = content;
+            return this;
+        }
+
+        public TopicBuilder author(User author) {
+            this.author = author;
             return this;
         }
 
