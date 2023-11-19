@@ -51,13 +51,15 @@ public class TopicService {
     public TopicResponse updateTopic(TopicRequest request, final long id) {
         Topic currentTopic = findById(id);
         Topic hydratedTopic = Topic.builder()
+                .id(currentTopic.getId())
                 .name(request.name())
                 .content(request.content())
                 .solved(request.solved())
                 .createdAt(currentTopic.getCreatedAt())
                 .updatedAt(Instant.now())
                 .build();
-        return topicMapper.toResponse(hydratedTopic);
+        Topic updatedTopic = topicRepository.save(hydratedTopic);
+        return topicMapper.toResponse(updatedTopic);
     }
 
     public void deleteTopic(final long id) {
