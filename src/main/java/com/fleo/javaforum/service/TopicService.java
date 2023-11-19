@@ -5,6 +5,7 @@ import com.fleo.javaforum.model.Topic;
 import com.fleo.javaforum.payload.request.TopicRequest;
 import com.fleo.javaforum.payload.response.TopicResponse;
 import com.fleo.javaforum.repository.TopicRepository;
+import com.fleo.javaforum.security.model.User;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,7 @@ public class TopicService {
         Topic topic = Topic.builder()
                 .name(request.name())
                 .content(request.content())
+                .author((User) auth.getPrincipal())
                 .solved(request.solved())
                 .createdAt(Instant.now())
                 .build();
@@ -54,6 +56,7 @@ public class TopicService {
                 .id(currentTopic.getId())
                 .name(request.name())
                 .content(request.content())
+                .author(currentTopic.getAuthor())
                 .solved(request.solved())
                 .createdAt(currentTopic.getCreatedAt())
                 .updatedAt(Instant.now())
