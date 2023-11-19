@@ -5,7 +5,6 @@ import com.fleo.javaforum.model.Message;
 import com.fleo.javaforum.model.Topic;
 import com.fleo.javaforum.payload.response.MessageResponse;
 import com.fleo.javaforum.repository.MessageRepository;
-import com.fleo.javaforum.repository.TopicRepository;
 import com.fleo.javaforum.security.model.User;
 import com.fleo.javaforum.security.payload.request.MessageRequest;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,7 +32,7 @@ public class MessageService {
         return messages;
     }
 
-    public MessageResponse createMessage(final Long topicId, MessageRequest request, Authentication auth) {
+    public MessageResponse createMessage(final long topicId, MessageRequest request, Authentication auth) {
         Topic topic = topicService.findById(topicId);
         Message message = Message.builder()
                 .content(request.content())
@@ -46,7 +45,7 @@ public class MessageService {
         return messageMapper.toResponse(message);
     }
 
-    public MessageResponse updateMessage(final int messageId, MessageRequest request) {
+    public MessageResponse updateMessage(final long messageId, MessageRequest request) {
         Message currentMessage = findById(messageId);
         Message hydratedMessage = Message.builder()
                 .id(currentMessage.getId())
@@ -59,7 +58,7 @@ public class MessageService {
         Message updatedMessage  = messageRepository.save(hydratedMessage);
         return messageMapper.toResponse(updatedMessage);
     }
-    public void deleteMessage(final int messageId) {
+    public void deleteMessage(final long messageId) {
         Message messageToDelete = findById(messageId);
         messageRepository.delete(messageToDelete);
     }
