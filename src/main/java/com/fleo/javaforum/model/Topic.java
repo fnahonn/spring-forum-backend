@@ -7,6 +7,12 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 
+@NamedEntityGraph(
+        name = "Topic.defaultEntityGraph",
+        attributeNodes = {
+                @NamedAttributeNode(value = "author")
+        }
+)
 @Entity
 @Table
 public class Topic {
@@ -17,7 +23,7 @@ public class Topic {
     private String name;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
