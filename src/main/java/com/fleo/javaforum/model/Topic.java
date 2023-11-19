@@ -24,7 +24,7 @@ public class Topic {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
     @Column(nullable = false)
