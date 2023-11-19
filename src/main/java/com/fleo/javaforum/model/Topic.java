@@ -2,6 +2,8 @@ package com.fleo.javaforum.model;
 
 import com.fleo.javaforum.security.model.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 
@@ -11,10 +13,17 @@ public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String name;
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
+    @Column(nullable = false)
     private boolean solved;
+    @Column(nullable = false)
     private Instant createdAt;
     private Instant updatedAt;
 
