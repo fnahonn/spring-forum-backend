@@ -8,7 +8,7 @@ import java.time.Instant;
 public record MessageResponse(
         Long id,
         String content,
-        TopicResponse topic,
+        Long topicId,
         UserResponse author,
         Boolean accepted,
         Instant createdAt,
