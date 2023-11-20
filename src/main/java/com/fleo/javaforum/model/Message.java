@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.Instant;
 
 @Entity
-@Table
+@Table(name = "forum_message")
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

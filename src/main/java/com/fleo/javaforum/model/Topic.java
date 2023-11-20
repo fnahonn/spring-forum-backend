@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.List;
 
 @NamedEntityGraph(
         name = "Topic.defaultEntityGraph",
@@ -14,7 +15,7 @@ import java.time.Instant;
         }
 )
 @Entity
-@Table
+@Table(name = "forum_topic")
 public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +30,12 @@ public class Topic {
     private User author;
     @Column(nullable = false)
     private boolean solved;
+    @OneToMany(targetEntity = Message.class, mappedBy = "topic")
+    private List<Message> messages;
+    @ManyToOne(targetEntity = Message.class, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private Message lastMessage;
     @Column(nullable = false)
     private Instant createdAt;
     private Instant updatedAt;
@@ -42,6 +49,8 @@ public class Topic {
         this.content = builder.content;
         this.author = builder.author;
         this.solved = builder.solved;
+        this.messages = builder.messages;
+        this.lastMessage = builder.lastMessage;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
     }
@@ -81,6 +90,22 @@ public class Topic {
         this.solved = solved;
     }
 
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public Message getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(Message lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -105,6 +130,8 @@ public class Topic {
         private String content;
         private User author;
         private boolean solved;
+        private List<Message> messages;
+        private Message lastMessage;
         private Instant createdAt;
         private Instant updatedAt;
 
@@ -130,6 +157,16 @@ public class Topic {
 
         public TopicBuilder solved(boolean solved) {
             this.solved = solved;
+            return this;
+        }
+
+        public TopicBuilder messages(List<Message> messages) {
+            this.messages = messages;
+            return this;
+        }
+
+        public TopicBuilder lastMessage(Message lastMessage) {
+            this.lastMessage = lastMessage;
             return this;
         }
 
