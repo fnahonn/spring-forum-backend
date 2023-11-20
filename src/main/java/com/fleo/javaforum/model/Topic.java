@@ -30,7 +30,7 @@ public class Topic {
     private User author;
     @Column(nullable = false)
     private boolean solved;
-    @OneToMany(targetEntity = Message.class, mappedBy = "topic")
+    @OneToMany(targetEntity = Message.class, mappedBy = "topic", fetch = FetchType.LAZY)
     private List<Message> messages;
     @ManyToOne(targetEntity = Message.class, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)

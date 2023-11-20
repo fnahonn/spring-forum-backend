@@ -10,7 +10,7 @@ public interface MessageMapper {
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "content", source = "content")
-    @Mapping(target = "topicId", source = "topic.id")
+    @Mapping(target = "topicId", ignore = true)
     @Mapping(target = "author", source = "author")
     @Mapping(target = "accepted", source = "accepted")
     @Mapping(target = "createdAt", source = "createdAt")

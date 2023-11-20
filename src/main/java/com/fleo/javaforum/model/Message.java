@@ -7,6 +7,11 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 
+@NamedEntityGraph(
+        name = "Message.defaultEntityGraph",
+        attributeNodes = {
+                @NamedAttributeNode("author")
+        })
 @Entity
 @Table(name = "forum_message")
 public class Message {

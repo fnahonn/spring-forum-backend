@@ -1,9 +1,11 @@
 package com.fleo.javaforum.service;
 
 import com.fleo.javaforum.mapper.TopicMapper;
+import com.fleo.javaforum.model.Message;
 import com.fleo.javaforum.model.Topic;
 import com.fleo.javaforum.payload.request.TopicRequest;
 import com.fleo.javaforum.payload.response.TopicResponse;
+import com.fleo.javaforum.repository.MessageRepository;
 import com.fleo.javaforum.repository.TopicRepository;
 import com.fleo.javaforum.security.model.User;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,18 +25,18 @@ public class TopicService {
     @Autowired
     private TopicRepository topicRepository;
     @Autowired
+    private MessageRepository messageRepository;
+    @Autowired
     private TopicMapper topicMapper;
 
-    public Page<TopicResponse> findAllTopics(final int page, final int size) {
+    public Iterable<TopicResponse> findAllTopics(final int page, final int size) {
         Page<Topic> topics = topicRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
-        List<TopicResponse> topicsList = topics.stream()
-                .map(topic -> topicMapper.toResponse(topic))
-                .toList();
-        return new PageImpl<>(topicsList, topics.getPageable(), topics.getSize());
+        return topicMapper.map(topics);
     }
 
     public TopicResponse findTopicById(final long id) {
         Topic topic = findById(id);
+        hydrateMessages(topic);
         return topicMapper.toResponse(topic);
     }
 
@@ -73,5 +75,11 @@ public class TopicService {
     public Topic findById(final long id) {
         return topicRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Topic not found"));
+    }
+
+    private Topic hydrateMessages(Topic topic) {
+        List<Message> messages = messageRepository.findByTopicIdOrderByAcceptedDescCreatedAtAsc(topic.getId());
+        topic.setMessages(messages);
+        return topic;
     }
 }
