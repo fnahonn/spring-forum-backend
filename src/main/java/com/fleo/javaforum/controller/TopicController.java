@@ -32,19 +32,21 @@ public class TopicController {
     }
 
     @PostMapping(value = "/topic", name = "topic.new")
+    @PreAuthorize("@forumPermissionEvaluator.hasPermission(null, 'Topic', 'createTopic')")
     public ResponseEntity<TopicResponse> create(@Valid @RequestBody TopicRequest request, Authentication auth) {
         TopicResponse response = topicService.createTopic(request, auth);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/topic/{id}", name = "topic.update")
-    @PreAuthorize("")
+    @PreAuthorize("@forumPermissionEvaluator.hasPermission(#id, 'Topic', 'updateTopic')")
     public ResponseEntity<TopicResponse> update(@PathVariable(name = "id") final long id,
                                                 @Valid @RequestBody TopicRequest request) {
         TopicResponse response = topicService.updateTopic(request, id);
         return ResponseEntity.ok(response);
     }
     @DeleteMapping(value = "/topic/{id}", name = "topic.delete")
+    @PreAuthorize("@forumPermissionEvaluator.hasPermission(#id, 'Topic', 'deleteTopic')")
     public ResponseEntity<String> delete(@PathVariable(name = "id") final long id) {
         topicService.deleteTopic(id);
         return ResponseEntity.ok(String.format("Topic %d has been deleted successfully", id));

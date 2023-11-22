@@ -62,7 +62,7 @@ public class MessageService {
         Message messageToDelete = findById(messageId);
         messageRepository.delete(messageToDelete);
     }
-    private Message findById(final long messageId) {
+    public Message findById(final long messageId) {
         return messageRepository.findById(messageId)
                 .orElseThrow(() -> new EntityNotFoundException("Message not found"));
     }
