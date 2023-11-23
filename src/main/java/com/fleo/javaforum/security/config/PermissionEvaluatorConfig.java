@@ -1,6 +1,6 @@
 package com.fleo.javaforum.security.config;
 
-import com.fleo.javaforum.security.evaluator.ForumPermissionEvaluator;
+import com.fleo.javaforum.security.evaluator.CustomPermissionEvaluator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -12,9 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 public class PermissionEvaluatorConfig {
 
     @Bean
-    static MethodSecurityExpressionHandler expressionHandler(ForumPermissionEvaluator forumPermissionEvaluator) {
+    static MethodSecurityExpressionHandler expressionHandler(CustomPermissionEvaluator customPermissionEvaluator) {
         var expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(forumPermissionEvaluator);
+        expressionHandler.setPermissionEvaluator(customPermissionEvaluator);
         return expressionHandler;
     }
 }

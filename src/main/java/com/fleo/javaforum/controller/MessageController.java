@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class MessageController {
     private MessageService messageService;
 
     @PostMapping("/topics/{id}/messages")
+    @PreAuthorize("hasPermission(null, 'MESSAGE', 'CREATE_MESSAGE')")
     public ResponseEntity<MessageResponse> create(@PathVariable(name = "id") final long topicId,
                                                   @Valid @RequestBody MessageRequest request,
                                                   Authentication auth) {
@@ -27,6 +29,7 @@ public class MessageController {
     }
 
     @PutMapping("/messages/{id}")
+    @PreAuthorize("hasPermission(#id, 'MESSAGE', 'UPDATE_MESSAGE')")
     public ResponseEntity<MessageResponse> update(@PathVariable(name = "id") final long messageId,
                                                   @Valid @RequestBody MessageRequest request) {
         MessageResponse response = messageService.updateMessage(messageId, request);
@@ -34,6 +37,7 @@ public class MessageController {
     }
 
     @DeleteMapping("/messages/{id}")
+    @PreAuthorize("hasPermission(#id, 'MESSAGE', 'DELETE_MESSAGE')")
     public ResponseEntity<String> delete(@PathVariable(name = "id") final long messageId) {
         messageService.deleteMessage(messageId);
         return ResponseEntity.ok(String.format("Message %d has been deleted successfully", messageId));
