@@ -5,6 +5,8 @@ import com.fleo.javaforum.model.Topic;
 import com.fleo.javaforum.security.model.User;
 import com.fleo.javaforum.service.MessageService;
 import com.fleo.javaforum.service.TopicService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,11 +48,12 @@ public class ForumPermissionEvaluator implements ObjectPermissionEvaluator {
     private TopicService topicService;
     @Autowired
     private MessageService messageService;
+    private final Logger log = LoggerFactory.getLogger(ForumPermissionEvaluator.class);
 
     @Override
     public boolean supports(Object permission, String targetDomainType) {
 
-        return PERMISSION_NAMES.contains((String) permission) && DOMAIN_TYPE_NAMES.contains(targetDomainType);
+        return PERMISSION_NAMES.contains((String) permission) && DOMAIN_TYPE_NAMES.contains(targetDomainType.toUpperCase());
 
     }
 
@@ -63,18 +66,29 @@ public class ForumPermissionEvaluator implements ObjectPermissionEvaluator {
             return false;
         }
 
+        Topic topic = null;
+        Message message = null;
+        if (targetId != null) {
+            if (targetType.equalsIgnoreCase(ForumDomainTypeSupported.TOPIC.name())) {
+                topic = topicService.findById((Long) targetId);
+            } else if (targetType.equalsIgnoreCase(ForumDomainTypeSupported.MESSAGE.name())) {
+                message = messageService.findById((Long) targetId);
+            }
+        }
+
         try {
 
             ForumPermission forumPermission = ForumPermission.valueOf((String) permission);
 
             return switch(forumPermission) {
-                case UPDATE_TOPIC, DELETE_TOPIC -> this.canUpdateTopic(user,  topicService.findById((long) targetId));
-                case UPDATE_MESSAGE, DELETE_MESSAGE -> this.ownMessage(user, messageService.findById((long) targetId));
-                case SOLVE_MESSAGE -> this.canSolve(user, messageService.findById((long) targetId));
+                case UPDATE_TOPIC, DELETE_TOPIC -> (topic != null) && this.canUpdateTopic(user,  topic);
+                case UPDATE_MESSAGE, DELETE_MESSAGE -> (message != null) && this.ownMessage(user, message);
+                case SOLVE_MESSAGE -> (message != null) && this.canSolve(user, message);
                 case CREATE_MESSAGE, CREATE_TOPIC -> true;
             };
 
         } catch (IllegalArgumentException e) {
+            log.error("Cannot map permission {} to an existing ForumPermission enum value. Reason : {}", permission, e.getMessage());
             return false;
         }
     }
