@@ -8,12 +8,29 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.Instant;
 import java.util.List;
 
-@NamedEntityGraph(
-        name = "Topic.defaultEntityGraph",
-        attributeNodes = {
-                @NamedAttributeNode(value = "author")
-        }
-)
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "Topic.defaultEntityGraph",
+                attributeNodes = {
+                        @NamedAttributeNode(value = "author")
+                }
+        ),
+        @NamedEntityGraph(
+                name = "Topic.withLastMessage",
+                attributeNodes = {
+                        @NamedAttributeNode(value = "author"),
+                        @NamedAttributeNode(value = "lastMessage", subgraph = "Message.defaultSubgraph")
+                },
+                subgraphs = {
+                        @NamedSubgraph(
+                                name = "Message.defaultSubgraph",
+                                attributeNodes = {
+                                        @NamedAttributeNode("author")
+                                }
+                        )
+                }
+        )
+})
 @Entity
 @Table(name = "forum_topic")
 public class Topic {

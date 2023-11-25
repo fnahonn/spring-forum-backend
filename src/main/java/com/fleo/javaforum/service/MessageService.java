@@ -1,6 +1,7 @@
 package com.fleo.javaforum.service;
 
 import com.fleo.javaforum.event.MessageAcceptedEvent;
+import com.fleo.javaforum.event.MessageCreatedEvent;
 import com.fleo.javaforum.mapper.MessageMapper;
 import com.fleo.javaforum.model.Message;
 import com.fleo.javaforum.model.Topic;
@@ -48,8 +49,9 @@ public class MessageService {
                 .accepted(false)
                 .createdAt(Instant.now())
                 .build();
-        message = messageRepository.save(message);
-        return messageMapper.toResponse(message);
+        Message createdMessage = messageRepository.save(message);
+        eventPublisher.publishEvent(new MessageCreatedEvent(createdMessage));
+        return messageMapper.toResponse(createdMessage);
     }
 
     public MessageResponse updateMessage(final long messageId, MessageRequest request) {

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface TopicRepository extends CrudRepository<Topic, Long>, PagingAndSortingRepository<Topic, Long> {
-    @EntityGraph(value = "Topic.defaultEntityGraph", type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(value = "Topic.withLastMessage", type = EntityGraph.EntityGraphType.FETCH)
     Page<Topic> findAll(Pageable pageable);
 
     @Override
