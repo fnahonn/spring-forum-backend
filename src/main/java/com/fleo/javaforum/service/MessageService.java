@@ -1,5 +1,6 @@
 package com.fleo.javaforum.service;
 
+import com.fleo.javaforum.event.MessageAcceptedEvent;
 import com.fleo.javaforum.mapper.MessageMapper;
 import com.fleo.javaforum.model.Message;
 import com.fleo.javaforum.model.Topic;
@@ -9,6 +10,7 @@ import com.fleo.javaforum.security.model.User;
 import com.fleo.javaforum.security.payload.request.MessageRequest;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +19,17 @@ import java.util.List;
 
 @Service
 public class MessageService {
-    @Autowired
-    private MessageRepository messageRepository;
-    @Autowired
-    private TopicService topicService;
-    @Autowired
-    private MessageMapper messageMapper;
+    private final MessageRepository messageRepository;
+    private final TopicService topicService;
+    private final MessageMapper messageMapper;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public MessageService(MessageRepository messageRepository, TopicService topicService, MessageMapper messageMapper, ApplicationEventPublisher eventPublisher) {
+        this.messageRepository = messageRepository;
+        this.topicService = topicService;
+        this.messageMapper = messageMapper;
+        this.eventPublisher = eventPublisher;
+    }
 
     public Iterable<MessageResponse> findAllByTopic(final long topicId) {
         List<MessageResponse> messages = messageRepository.findByTopicIdOrderByAcceptedDescCreatedAtAsc(topicId)
@@ -62,6 +69,16 @@ public class MessageService {
         Message messageToDelete = findById(messageId);
         messageRepository.delete(messageToDelete);
     }
+
+    public void acceptMessage(final long messageId) {
+        Message message = findById(messageId);
+        message.setAccepted(true);
+        message.setUpdatedAt(Instant.now());
+        Message acceptedMessage = messageRepository.save(message);
+        eventPublisher.publishEvent(new MessageAcceptedEvent(acceptedMessage));
+
+    }
+
     public Message findById(final long messageId) {
         return messageRepository.findById(messageId)
                 .orElseThrow(() -> new EntityNotFoundException("Message not found"));

@@ -72,6 +72,13 @@ public class TopicService {
         topicRepository.delete(topicToDelete);
     }
 
+    public void solveTopic(Message message) {
+        Topic topic = message.getTopic();
+        topic.setSolved(true);
+        topic.setUpdatedAt(Instant.now());
+        topicRepository.save(topic);
+    }
+
     public Topic findById(final long id) {
         return topicRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Topic not found"));

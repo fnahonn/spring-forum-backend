@@ -39,16 +39,16 @@ public class TopicController {
     }
 
     @PutMapping(value = "/topic/{id}", name = "topic.update")
-    @PreAuthorize("hasPermission(#id, 'TOPIC', 'UPDATE_TOPIC')")
-    public ResponseEntity<TopicResponse> update(@PathVariable(name = "id") final long id,
+    @PreAuthorize("hasPermission(#topicId, 'TOPIC', 'UPDATE_TOPIC')")
+    public ResponseEntity<TopicResponse> update(@PathVariable(name = "id") final long topicId,
                                                 @Valid @RequestBody TopicRequest request) {
-        TopicResponse response = topicService.updateTopic(request, id);
+        TopicResponse response = topicService.updateTopic(request, topicId);
         return ResponseEntity.ok(response);
     }
     @DeleteMapping(value = "/topic/{id}", name = "topic.delete")
-    @PreAuthorize("hasPermission(#id, 'TOPIC', 'DELETE_TOPIC')")
-    public ResponseEntity<String> delete(@PathVariable(name = "id") final long id) {
-        topicService.deleteTopic(id);
-        return ResponseEntity.ok(String.format("Topic %d has been deleted successfully", id));
+    @PreAuthorize("hasPermission(#topicId, 'TOPIC', 'DELETE_TOPIC')")
+    public ResponseEntity<String> delete(@PathVariable(name = "id") final long topicId) {
+        topicService.deleteTopic(topicId);
+        return ResponseEntity.ok(String.format("Topic %d has been deleted successfully", topicId));
     }
 }
