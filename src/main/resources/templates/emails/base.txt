@@ -1,0 +1,3 @@
+[#th:block th:fragment=body]
+Premier test d'envoi de mail
+[/th:block]
