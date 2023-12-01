@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 
-@Component
+@Component("forumSubscriberMailing")
 public class ForumSubscriber {
 
     private final ForumEmailService mailer;

@@ -3,7 +3,9 @@ package com.fleo.javaforum.infrastructure.mailing;
 import com.fleo.javaforum.model.Message;
 import com.fleo.javaforum.security.model.User;
 import com.fleo.javaforum.service.TopicService;
+import jakarta.mail.Address;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -31,22 +33,18 @@ public class ForumEmailService extends BaseEmailService {
 
         for (User user : users) {
             boolean isTopicOwner = user.getId().equals(message.getTopic().getAuthor().getId());
-            MimeMessage mail = createEmail("/mails/forum/new_post.txt", Map.of(
+            MimeMessage mail = createEmail("new_forum_message", Map.of(
                     "author", author,
                     "message", message,
                     "topic", message.getTopic(),
                     "is_topic_owner", isTopicOwner
             ));
-            MimeMessageHelper helper = new MimeMessageHelper(mail, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
-            helper.setTo(user.getEmail());
-            helper.setSubject(isTopicOwner ?
-                    String.format("%s a répondu à votre sujet", author.getUsername()) :
-                    String.format("%s a répondu à un sujet auquel vous avez participé", author.getUsername())
+            mail.setRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(user.getEmail()));
+            mail.setSubject(isTopicOwner ?
+                    String.format("%s a répondu à votre sujet", author.getPseudo()) :
+                    String.format("%s a répondu à un sujet auquel vous avez participé", author.getPseudo())
             );
             this.send(mail);
         }
-
-
-
     }
 }

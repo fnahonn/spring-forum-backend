@@ -1,0 +1,1 @@
+[# th:if="${content == 'new_forum_message'}" th:replace="~{text/forum/new_message.txt}"/]

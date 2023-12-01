@@ -6,6 +6,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class BaseEmailService {
 
     private final JavaMailSender emailSender;
+
     private final SpringTemplateEngine thymeleafTemplateEngine;
     private final Logger log = LoggerFactory.getLogger(BaseEmailService.class);
 
@@ -29,21 +31,18 @@ public class BaseEmailService {
         this.thymeleafTemplateEngine = thymeleafTemplateEngine;
     }
 
-    protected MimeMessage createEmail(String template, Map<String, Object> data) throws MessagingException, UnsupportedEncodingException {
+    protected MimeMessage createEmail(String layout, Map<String, Object> data) throws MessagingException, UnsupportedEncodingException {
         Context thymeleafContext = new Context();
 
-        Map<String, Object> htmlData = new HashMap<>(data);
-        htmlData.put("layout", "mails/base.html");
-        thymeleafContext.setVariables(htmlData);
-        String htmlBody = thymeleafTemplateEngine.process(template, thymeleafContext);
+        thymeleafContext.setVariables(data);
+        thymeleafContext.setVariable("layout", layout);
+        String textBody = thymeleafTemplateEngine.process("text/base.txt", thymeleafContext);
+        String htmlBody = thymeleafTemplateEngine.process("html/base.html", thymeleafContext);
 
-        Map<String, Object> textData = new HashMap<>(data);
-        textData.put("layout", "mails/base.txt");
-        thymeleafContext.setVariables(textData);
-        String textBody = thymeleafTemplateEngine.process(template, thymeleafContext);
+
 
         MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setFrom(new InternetAddress("floflo@hotmail.fr", "Florian Nahon"));
         helper.setText(textBody, htmlBody);
         return message;
