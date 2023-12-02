@@ -1,4 +1,4 @@
-package com.fleo.javaforum.infrastructure.mailing;
+package com.fleo.javaforum.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

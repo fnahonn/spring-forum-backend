@@ -1,4 +1,4 @@
-package com.fleo.javaforum.security.config;
+package com.fleo.javaforum.config.security;
 
 import com.fleo.javaforum.security.repository.UserRepository;
 import org.springframework.context.annotation.Bean;

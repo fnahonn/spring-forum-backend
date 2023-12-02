@@ -1,5 +1,8 @@
-package com.fleo.javaforum.security.config;
+package com.fleo.javaforum.config.security;
 
+import com.fleo.javaforum.security.config.CustomAccessDeniedHandler;
+import com.fleo.javaforum.security.config.Http401UnauthorizedEntrypoint;
+import com.fleo.javaforum.security.config.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
