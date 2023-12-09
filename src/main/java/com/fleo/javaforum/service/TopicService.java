@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TopicService {
@@ -89,6 +90,10 @@ public class TopicService {
     public Topic findById(final long id) {
         return topicRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Topic not found"));
+    }
+
+    public Set<User> findUsersToNotify(final Message message) {
+        return topicRepository.findUsersToNotify(message.getTopic(), message.getAuthor());
     }
 
     private Topic hydrateMessages(Topic topic) {

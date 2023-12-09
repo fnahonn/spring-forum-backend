@@ -4,29 +4,40 @@ import com.fleo.javaforum.event.MessageCreatedEvent;
 import com.fleo.javaforum.infrastructure.messagequeue.message.EmailMessage;
 import com.fleo.javaforum.model.Message;
 import com.fleo.javaforum.security.model.User;
+import com.fleo.javaforum.service.TopicService;
 import jakarta.mail.MessagingException;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component("forumSubscriberMailing")
 public class ForumSubscriber {
 
     private final EmailService mailer;
+    private final TopicService topicService;
 
-    public ForumSubscriber(EmailService mailer) {
+    public ForumSubscriber(EmailService mailer, TopicService topicService) {
         this.mailer = mailer;
+        this.topicService = topicService;
     }
 
     @EventListener
     public void onMessageCreated(MessageCreatedEvent event) {
         Message message = event.getMessage();
-        List<User> users = List.of(message.getTopic().getAuthor());
+        Set<User> users = new HashSet<>();
+        users.addAll(topicService.findUsersToNotify(message));
 
         User author = message.getAuthor();
+
+        if (!message.getAuthor().getId().equals(message.getTopic().getAuthor().getId())) {
+            users.add(message.getTopic().getAuthor());
+        }
+
 
         for (User user : users) {
             boolean isTopicOwner = user.getId().equals(message.getTopic().getAuthor().getId());
