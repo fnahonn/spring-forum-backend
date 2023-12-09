@@ -1,11 +1,12 @@
 package com.fleo.javaforum.payload.response;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 public record ErrorResponse(
         int status,
-        Set<String> errors,
+        List<String> errors,
         Instant timestamp,
         String message,
         String path
@@ -14,7 +15,7 @@ public record ErrorResponse(
 
     public static final class Builder {
         private int status;
-        private Set<String> errors;
+        private List<String> errors;
         private Instant timestamp;
         private String message;
         private String path;
@@ -24,7 +25,7 @@ public record ErrorResponse(
             return this;
         }
 
-        public Builder errors(Set<String> errors) {
+        public Builder errors(List<String> errors) {
             this.errors = errors;
             return this;
         }

@@ -22,7 +22,7 @@ public class EmailMessageConsumer implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         EmailMessage email = (EmailMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
         String channel = redisTemplate.getStringSerializer().deserialize(message.getChannel());
-        log.info("GET EmailMessage {} from Redis Channel '{}' - handled by EmailMessageConsumer", email, channel);
+        log.info("GET EmailMessage {} from Redis Channel '{}'", email, channel);
         emailService.sendNow(email);
     }
 }

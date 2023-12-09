@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
@@ -30,7 +30,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         ErrorResponse body = ErrorResponse.builder()
                 .status(HttpServletResponse.SC_FORBIDDEN)
-                .errors(Set.of("Forbidden"))
+                .errors(List.of("Forbidden"))
                 .timestamp(Instant.now())
                 .message(accessDeniedException.getMessage())
                 .path(request.getServletPath())

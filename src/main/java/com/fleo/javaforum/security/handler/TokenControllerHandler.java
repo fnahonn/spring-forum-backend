@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 @RestControllerAdvice
 public class TokenControllerHandler {
@@ -20,7 +20,7 @@ public class TokenControllerHandler {
     public ResponseEntity<ErrorResponse> handleRefreshTokenException(TokenException ex, WebRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(Instant.now())
-                .errors(Set.of("Invalid Token"))
+                .errors(List.of("Invalid Token"))
                 .status(HttpStatus.FORBIDDEN.value())
                 .message(ex.getMessage())
                 .path(request.getDescription(false))

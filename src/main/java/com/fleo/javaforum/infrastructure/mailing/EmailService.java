@@ -2,7 +2,6 @@ package com.fleo.javaforum.infrastructure.mailing;
 
 import com.fleo.javaforum.infrastructure.messagequeue.message.EmailMessage;
 import com.fleo.javaforum.infrastructure.messagequeue.publisher.EmailMessagePublisher;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 @Service
@@ -41,14 +39,10 @@ public class EmailService {
             log.info("Email of type '{}' sent to : {}", message.layout(), message.recipientAddress());
         } catch (MailException e) {
             log.error("The email hasn't be sent", e);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private MimeMessagePreparator prepareEmail(EmailMessage message) throws MessagingException, UnsupportedEncodingException {
+    private MimeMessagePreparator prepareEmail(EmailMessage message) {
         Context thymeleafContext = new Context();
 
         Map<String, Object> data = message.params();

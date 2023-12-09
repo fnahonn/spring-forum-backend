@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 @Component
 public class Http401UnauthorizedEntrypoint implements AuthenticationEntryPoint {
@@ -30,7 +30,7 @@ public class Http401UnauthorizedEntrypoint implements AuthenticationEntryPoint {
 
         ErrorResponse body = ErrorResponse.builder()
                 .status(HttpServletResponse.SC_UNAUTHORIZED)
-                .errors(Set.of("Unauthorized"))
+                .errors(List.of("Unauthorized"))
                 .timestamp(Instant.now())
                 .message(authException.getMessage())
                 .path(request.getServletPath())

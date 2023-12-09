@@ -1,6 +1,7 @@
 package com.fleo.javaforum.security.config;
 
 import com.fleo.javaforum.security.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,9 +40,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String jwt = authHeader.substring(7);
-        final String userEmail = jwtService.extractUsername(jwt);
+        String userEmail = "";
 
+        final String jwt = authHeader.substring(7);
+        try {
+            userEmail = jwtService.extractUsername(jwt);
+        } catch(ExpiredJwtException e) {
+            logger.error(e.getMessage(), e);
+        }
         if (StringUtils.isNotEmpty(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 

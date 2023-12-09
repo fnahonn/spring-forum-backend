@@ -45,7 +45,7 @@ public class TopicService {
                 .name(request.name())
                 .content(request.content())
                 .author((User) auth.getPrincipal())
-                .solved(request.solved())
+                .solved(false)
                 .createdAt(Instant.now())
                 .build();
         topic = topicRepository.save(topic);
@@ -59,7 +59,7 @@ public class TopicService {
                 .name(request.name())
                 .content(request.content())
                 .author(currentTopic.getAuthor())
-                .solved(request.solved())
+                .solved(false)
                 .createdAt(currentTopic.getCreatedAt())
                 .updatedAt(Instant.now())
                 .build();
