@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.5</version>
+		<version>3.2.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.fleo</groupId>
@@ -19,6 +19,9 @@
 		<liquibase.version>4.25.0</liquibase.version>
 		<liquibase-hibernate.version>4.25.0</liquibase-hibernate.version>
 		<liquibase-maven-plugin.version>4.25.0</liquibase-maven-plugin.version>
+		<postgresql.driver.version>42.6.0</postgresql.driver.version>
+		<jsonwebtoken.version>0.12.3</jsonwebtoken.version>
+		<springframework.version>6.1.1</springframework.version>
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 	</properties>
 	<dependencies>
@@ -41,7 +44,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
-			<version>3.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,6 +62,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>${postgresql.driver.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -75,29 +78,24 @@
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
-			<version>0.12.3</version>
+			<version>${jsonwebtoken.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
-			<version>0.12.3</version>
+			<version>${jsonwebtoken.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
-			<version>0.12.3</version>
+			<version>${jsonwebtoken.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-			<version>4.25.0</version>
 		</dependency>
 	</dependencies>
 
@@ -134,30 +132,37 @@
                 include <groupId>, <artifactID>, and <version> elements-->
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>${liquibase-maven-plugin.version}</version>
 				<configuration>
 					<!--set values for Liquibase properties and settings
                     for example, the location of a properties file to use-->
 					<changeLogFile>src/main/resources/db/db.changelog-master.yaml</changeLogFile>
 					<diffChangeLogFile>
-						${project.basedir}/src/main/resources/db/migrations/${maven.build.timestamp}_changelog.xml
+						${project.basedir}/src/main/resources/db/changelog/${maven.build.timestamp}_changelog.xml
 					</diffChangeLogFile>
-					<referenceUrl>hibernate:spring:com.fleo.javaforum?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+					<referenceUrl>hibernate:spring:com.fleo.javaforum?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
 					<url>jdbc:postgresql://localhost:5432/javaforum</url>
 					<username>javaforum</username>
 					<password>javaforum</password>
 					<driver>org.postgresql.Driver</driver>
-					<logging>debug</logging>
 				</configuration>
 				<dependencies>
-					<!--set up any dependencies for Liquibase to function in your
-                    environment for example, a database-specific plugin-->
+					<dependency>
+						<groupId>org.liquibase</groupId>
+						<artifactId>liquibase-core</artifactId>
+						<version>${liquibase.version}</version>
+					</dependency>
 					<dependency>
 						<groupId>org.liquibase.ext</groupId>
 						<artifactId>liquibase-hibernate6</artifactId>
 						<version>${liquibase-hibernate.version}</version>
 					</dependency>
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-data-jpa</artifactId>
+						<version>3.2.0</version>
+					</dependency>
 				</dependencies>
+
 			</plugin>
 		</plugins>
 	</build>
