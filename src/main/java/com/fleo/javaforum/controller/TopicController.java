@@ -51,4 +51,11 @@ public class TopicController {
         topicService.deleteTopic(topicId);
         return ResponseEntity.ok(String.format("Topic %d has been deleted successfully", topicId));
     }
+
+    @GetMapping(value = "/topic/search", name = "topic.search")
+    public ResponseEntity<Iterable<TopicResponse>> search(@RequestParam(name = "q", defaultValue = "") final String search,
+                                                          @RequestParam(name = "p", defaultValue = "0") final int page) {
+        Iterable<TopicResponse> response = topicService.searchTopics(search, page, ELEMENTS_PER_PAGE);
+        return ResponseEntity.ok(response);
+    }
 }

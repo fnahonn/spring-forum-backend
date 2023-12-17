@@ -73,6 +73,10 @@ public class TopicService {
         topicRepository.delete(topicToDelete);
     }
 
+    public Iterable<TopicResponse> searchTopics(final String search, final int page, final int size) {
+        return topicRepository.search(search, PageRequest.of(page, size));
+    }
+
     public void solveTopic(Message message) {
         Topic topic = message.getTopic();
         topic.setSolved(true);

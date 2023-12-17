@@ -2,6 +2,8 @@ package com.fleo.javaforum.repository;
 
 import com.fleo.javaforum.model.Message;
 import com.fleo.javaforum.model.Topic;
+import com.fleo.javaforum.payload.response.TopicResponse;
+import com.fleo.javaforum.repository.fragment.TopicRepositoryFragment;
 import com.fleo.javaforum.security.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +18,8 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface TopicRepository extends CrudRepository<Topic, Long>, PagingAndSortingRepository<Topic, Long> {
+public interface TopicRepository extends CrudRepository<Topic, Long>, PagingAndSortingRepository<Topic, Long>, TopicRepositoryFragment {
+
     @EntityGraph(value = "Topic.withLastMessage", type = EntityGraph.EntityGraphType.FETCH)
     Page<Topic> findAll(Pageable pageable);
 

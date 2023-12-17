@@ -4,6 +4,8 @@ import com.fleo.javaforum.model.Topic;
 import com.fleo.javaforum.payload.response.TopicResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public interface TopicMapper {
     TopicResponse toResponseWithoutMessages(Topic topic);
 
 
-    default Iterable<TopicResponse> map(Iterable<Topic> topicIterable) {
+    default Iterable<TopicResponse> map(Page<Topic> topicIterable) {
         if ( topicIterable == null ) {
             return null;
         }
@@ -44,7 +46,7 @@ public interface TopicMapper {
             iterable.add(toResponseWithoutMessages(topic));
         }
 
-        return iterable;
+        return new PageImpl<>(iterable, topicIterable.getPageable(), topicIterable.getSize());
     }
 
 
