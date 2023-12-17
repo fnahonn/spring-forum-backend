@@ -2,8 +2,6 @@ package com.fleo.javaforum.security.config;
 
 import com.fleo.javaforum.security.model.User;
 import com.fleo.javaforum.security.service.JwtService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
