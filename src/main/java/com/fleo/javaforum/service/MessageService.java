@@ -10,9 +10,10 @@ import com.fleo.javaforum.repository.MessageRepository;
 import com.fleo.javaforum.security.model.User;
 import com.fleo.javaforum.security.payload.request.MessageRequest;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,11 +26,14 @@ public class MessageService {
     private final MessageMapper messageMapper;
     private final ApplicationEventPublisher eventPublisher;
 
-    public MessageService(MessageRepository messageRepository, TopicService topicService, MessageMapper messageMapper, ApplicationEventPublisher eventPublisher) {
+    private final UserDetailsService userDetailsService;
+
+    public MessageService(MessageRepository messageRepository, TopicService topicService, MessageMapper messageMapper, ApplicationEventPublisher eventPublisher, UserDetailsService userDetailsService) {
         this.messageRepository = messageRepository;
         this.topicService = topicService;
         this.messageMapper = messageMapper;
         this.eventPublisher = eventPublisher;
+        this.userDetailsService = userDetailsService;
     }
 
     public Iterable<MessageResponse> findAllByTopic(final long topicId) {
@@ -42,10 +46,13 @@ public class MessageService {
 
     public MessageResponse createMessage(final long topicId, MessageRequest request, Authentication auth) {
         Topic topic = topicService.findById(topicId);
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        User author = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
+
         Message message = Message.builder()
                 .content(request.content())
                 .topic(topic)
-                .author((User) auth.getPrincipal())
+                .author(author)
                 .accepted(false)
                 .createdAt(Instant.now())
                 .build();

@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -31,6 +33,9 @@ public class TopicService {
     @Autowired
     private TopicMapper topicMapper;
 
+    @Autowired
+    UserDetailsService userDetailsService;
+
     public Iterable<TopicResponse> findAllTopics(final int page, final int size) {
         Page<Topic> topics = topicRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
         return topicMapper.map(topics);
@@ -43,10 +48,12 @@ public class TopicService {
     }
 
     public TopicResponse createTopic(TopicRequest request, Authentication auth) {
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        User author = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
         Topic topic = Topic.builder()
                 .name(request.name())
                 .content(request.content())
-                .author((User) auth.getPrincipal())
+                .author(author)
                 .solved(false)
                 .createdAt(Instant.now())
                 .build();

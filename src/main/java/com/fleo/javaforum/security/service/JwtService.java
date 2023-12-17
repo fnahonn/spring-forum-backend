@@ -1,18 +1,23 @@
 package com.fleo.javaforum.security.service;
 
+import com.fleo.javaforum.security.model.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -23,21 +28,43 @@ public class JwtService {
     @Value("${application.security.refresh-token.expiration}")
     private long refreshExpiration;
 
+    private Logger log = LoggerFactory.getLogger(JwtService.class);
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public Long extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("user_id", Long.class));
+    }
+    public Collection<String> extractAuthorities(String token) {
+        return extractClaim(token, claims -> claims.get("roles", Collection.class));
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("user_id", ((User) userDetails).getId());
+        extraClaims.put("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
+        return generateToken(extraClaims, userDetails);
+    }
+
+    public boolean isTokenValid(String token) {
+        try {
+            return !isTokenExpired(token);
+        } catch (JwtException e) {
+            log.error(e.getMessage(), e);
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try {
+            Date expirationDate = extractExpiration(token);
+            return expirationDate != null && expirationDate.before(new Date());
+        } catch(ExpiredJwtException e) {
+            log.error(e.getMessage(), e);
+            return true;
+        }
     }
 
     private Date extractExpiration(String token) {

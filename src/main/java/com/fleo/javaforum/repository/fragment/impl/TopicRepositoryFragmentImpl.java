@@ -1,20 +1,17 @@
 package com.fleo.javaforum.repository.fragment.impl;
 
-import com.fleo.javaforum.mapper.TopicMapper;
 import com.fleo.javaforum.model.Topic;
 import com.fleo.javaforum.repository.fragment.TopicRepositoryFragment;
 import com.fleo.javaforum.security.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 public class TopicRepositoryFragmentImpl implements TopicRepositoryFragment {
 
