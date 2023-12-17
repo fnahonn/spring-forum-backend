@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+    <changeSet id="20231217-1" author="fnahon" context="excludeFromDiff">
+        <comment>Improve topic fulltext search : Add weights on name and content</comment>
+        <sql>
+            ALTER TABLE forum_topic
+            DROP COLUMN textsearchable_index_col;
+        </sql>
+        <sql>
+            DROP INDEX IF EXISTS textsearchable_index_col;
+        </sql>
+        <sql>
+            ALTER TABLE forum_topic
+            ADD COLUMN textsearchable_index_col tsvector
+            GENERATED ALWAYS AS (setweight(to_tsvector('french', coalesce(name, '')), 'A') || ' ' || setweight(to_tsvector('french', coalesce(content, '')), 'B')) STORED;
+        </sql>
+        <sql>
+            CREATE INDEX forum_topic_textsearch_idx ON forum_topic USING GIN (textsearchable_index_col);
+        </sql>
+    </changeSet>
+</databaseChangeLog>
