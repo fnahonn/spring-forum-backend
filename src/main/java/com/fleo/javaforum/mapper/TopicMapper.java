@@ -46,7 +46,7 @@ public interface TopicMapper {
             iterable.add(toResponseWithoutMessages(topic));
         }
 
-        return new PageImpl<>(iterable, topicIterable.getPageable(), topicIterable.getSize());
+        return new PageImpl<>(iterable, topicIterable.getPageable(), topicIterable.getTotalElements());
     }
 
 

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -74,7 +75,8 @@ public class TopicService {
     }
 
     public Iterable<TopicResponse> searchTopics(final String search, final int page, final int size) {
-        return topicRepository.search(search, PageRequest.of(page, size));
+        Page<Topic> topics =  topicRepository.search(search, PageRequest.of(page, size));
+        return topicMapper.map(topics);
     }
 
     public void solveTopic(Message message) {
