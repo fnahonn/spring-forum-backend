@@ -1,7 +1,7 @@
 package com.fleo.javaforum.infrastructure.mailing;
 
 import com.fleo.javaforum.infrastructure.messagequeue.message.EmailMessage;
-import com.fleo.javaforum.infrastructure.messagequeue.publisher.EmailMessagePublisher;
+import com.fleo.javaforum.infrastructure.messagequeue.producer.EmailStreamProducer;
 import jakarta.mail.internet.InternetAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +20,17 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine thymeleafTemplateEngine;
-    private final EmailMessagePublisher publisher;
+    private final EmailStreamProducer producer;
     private final Logger log = LoggerFactory.getLogger(EmailService.class);
 
-    public EmailService(JavaMailSender emailSender, SpringTemplateEngine thymeleafTemplateEngine, EmailMessagePublisher publisher) {
+    public EmailService(JavaMailSender emailSender, SpringTemplateEngine thymeleafTemplateEngine, EmailStreamProducer producer) {
         this.emailSender = emailSender;
         this.thymeleafTemplateEngine = thymeleafTemplateEngine;
-        this.publisher = publisher;
+        this.producer = producer;
     }
 
     public void send(EmailMessage message) {
-        publisher.publish("email", message);
+        producer.produce(message);
     }
     public void sendNow(EmailMessage message) {
         try {

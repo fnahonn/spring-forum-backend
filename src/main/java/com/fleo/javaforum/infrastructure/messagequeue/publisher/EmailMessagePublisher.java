@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@Deprecated
 public class EmailMessagePublisher implements MessagePublisher {
 
     @Autowired

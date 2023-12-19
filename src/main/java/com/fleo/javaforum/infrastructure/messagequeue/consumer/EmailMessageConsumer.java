@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 
+@Deprecated
 public class EmailMessageConsumer implements MessageListener {
 
     @Autowired
