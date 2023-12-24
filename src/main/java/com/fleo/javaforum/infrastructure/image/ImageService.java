@@ -36,12 +36,10 @@ public class ImageService {
             throw new IllegalArgumentException("width [" + targetWidth
                     + "] and height [" + targetHeight + "] must be > 0");
 
-        try (InputStream inputStream = file.getInputStream()) {
-            /*if (!checkSafeImage(inputStream)) {
+        try (InputStream inputStream = new BufferedInputStream(file.getInputStream())) {
+            if (!checkSafeImage(inputStream)) {
                 throw new IllegalArgumentException("Incorrect image size");
-            }*/
-
-
+            }
             originalImage = ImageIO.read(inputStream);
         }
 
@@ -54,7 +52,7 @@ public class ImageService {
         }
 
 
-        BufferedImage resizedImage = resizeImageIncrementally(originalImage, targetWidth, targetHeight, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        BufferedImage resizedImage = resizeImageIncrementally(originalImage, targetWidth, targetHeight, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 
         return resizedImage;
@@ -77,26 +75,22 @@ public class ImageService {
 
             boolean write = ImageIO.write(imageToUpload, uploadUtils.getExtension(originalFileName), outputFile);
 
+            if (!write) {
+                throw new IOException("An error occured during image upload");
+            }
             return outputFile;
 
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException("Failed to store file", e);
         }
     }
 
     private boolean checkSafeImage(InputStream input) throws IOException {
-        BufferedInputStream buffInput = new BufferedInputStream(input);
-        byte[] headerBytes = new byte[16];
-        ImageInputStream imageInputStream = null;
 
-        try {
-            buffInput.mark(headerBytes.length);
-            int bytesRead = buffInput.read(headerBytes);
-            imageInputStream = ImageIO.createImageInputStream(new ByteArrayInputStream(headerBytes));
+        input.mark(Integer.MAX_VALUE);
 
-            if (bytesRead == -1) {
-                return false;
-            }
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(input)) {
 
             Iterator<ImageReader> iter = ImageIO.getImageReaders(imageInputStream);
             long maxSize = 1920L * 1080L;
@@ -109,17 +103,14 @@ public class ImageService {
             reader.setInput(imageInputStream, true, true);
 
             long width = reader.getWidth(0);
-            long height = reader.getHeight(0); reader.getFormatName();
+            long height = reader.getHeight(0);
 
             return (width * height) <= maxSize;
 
         } catch(IOException e) {
             return false;
         } finally {
-            buffInput.reset();
-            if (imageInputStream != null) {
-                imageInputStream.close();
-            }
+            input.reset();
         }
     }
 
