@@ -89,7 +89,7 @@ public class ImageService {
 
             try (FileOutputStream fos = new FileOutputStream(outputFile)) {
                 boolean write = ImageIO.write(imageToUpload, uploadUtils.getExtension(originalFileName), fos);
-                
+
                 if (!write) {
                     throw new IOException("An error occured during image upload");
                 }

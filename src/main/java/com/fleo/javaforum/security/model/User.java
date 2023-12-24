@@ -28,6 +28,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column
+    private String avatarName;
+    @Column(nullable = true)
     private Instant createdAt;
     @Column
     private Instant updatedAt;
@@ -44,6 +46,7 @@ public class User implements UserDetails {
         this.email = builder.email;
         this.password = builder.password;
         this.role = builder.role;
+        this.avatarName = builder.avatarName;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
     }
@@ -87,6 +90,10 @@ public class User implements UserDetails {
         return this.role.getAuthorities();
     }
 
+    public String getAvatarName() {
+        return this.avatarName;
+    }
+
     public Instant getCreatedAt() {
         return this.createdAt;
     }
@@ -125,6 +132,7 @@ public class User implements UserDetails {
         private String email;
         private String password;
         private Role role;
+        private String avatarName;
         private Instant createdAt;
         private Instant updatedAt;
 
@@ -160,6 +168,10 @@ public class User implements UserDetails {
 
         public UserBuilder role(Role role) {
             this.role = role;
+            return this;
+        }
+        public UserBuilder avatarName(String avatarName) {
+            this.avatarName = avatarName;
             return this;
         }
 
