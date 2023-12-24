@@ -28,9 +28,10 @@ public class ImageService {
         this.uploadUtils = uploadUtils;
     }
 
-    public BufferedImage resize(MultipartFile file, int targetWidth, int targetHeight) throws IOException {
+    public BufferedImage resize(MultipartFile file, int targetWidth, int targetHeight, boolean cropped) throws IOException {
 
-        BufferedImage originalImage;
+        BufferedImage originalImage = null;
+        BufferedImage croppedImage = null;
 
         if (targetWidth <= 0 || targetHeight <= 0)
             throw new IllegalArgumentException("width [" + targetWidth
@@ -38,25 +39,35 @@ public class ImageService {
 
         try (InputStream inputStream = new BufferedInputStream(file.getInputStream())) {
             if (!checkSafeImage(inputStream)) {
-                throw new IllegalArgumentException("Incorrect image size");
+                throw new IllegalArgumentException("L'image ne doit pas dépasser 1920px x 1080px");
             }
+
             originalImage = ImageIO.read(inputStream);
+
         } catch (IOException e) {
             log.error("An error occurred reading file from request", e);
             throw new RuntimeException("Failed to store file", e);
         }
-
         float ratio = (float) originalImage.getWidth() / (float) originalImage.getHeight();
 
-        if (ratio <= 1) {
-            targetHeight = Math.round((float) targetWidth / ratio);
+        if (cropped) {
+            //On conserve la dimension la plus petite
+            int targetDimension = (ratio <= 1) ? originalImage.getWidth() : originalImage.getHeight();
+
+            croppedImage = crop(originalImage, targetDimension, targetDimension);
         } else {
-            targetWidth = Math.round((float) targetHeight * ratio);
+            //En réalité on ne se sert que d'une dimension pour respecter les proportions
+            if (ratio <= 1) {
+                targetHeight = Math.round((float) targetWidth / ratio);
+            } else {
+                targetWidth = Math.round((float) targetHeight * ratio);
+            }
         }
-
-
-        BufferedImage resizedImage = resizeImageIncrementally(originalImage, targetWidth, targetHeight, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
+        BufferedImage resizedImage = resizeImageIncrementally(
+                cropped ? croppedImage : originalImage, 
+                targetWidth, 
+                targetHeight, 
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         return resizedImage;
     }
@@ -89,6 +100,13 @@ public class ImageService {
         }
     }
 
+    /**
+     * <p>Prévention contre les attaques de type Pixel Flood</p>
+     * @param input input stream à contrôler
+     * @return boolean
+     * @throws IOException
+     * @Descti
+     */
     private boolean checkSafeImage(InputStream input) throws IOException {
 
         input.mark(Integer.MAX_VALUE);
@@ -128,7 +146,7 @@ public class ImageService {
             int prevCurrentWidth = currentWidth;
             int prevCurrentHeight = currentHeight;
 
-            currentWidth = Math.max(targetWidth, currentWidth - (currentWidth / fraction));
+                currentWidth = Math.max(targetWidth, currentWidth - (currentWidth / fraction));
 
             currentHeight = Math.max(targetHeight, currentHeight - (currentHeight / fraction));
 
@@ -143,7 +161,7 @@ public class ImageService {
             );
 
             Graphics2D graphics2D = incrementalImage.createGraphics();
-            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolationHintValue);
             graphics2D.drawImage(src, 0, 0, currentWidth, currentHeight, null);
             graphics2D.dispose();
 
@@ -161,5 +179,38 @@ public class ImageService {
         log.info("Ended in {} increments", incrementCount);
 
         return src;
+    }
+
+    private BufferedImage crop(BufferedImage src, int targetWidth, int targetHeight) {
+        int currentWidth = src.getWidth();
+        int currentHeight = src.getHeight();
+
+        BufferedImage croppedImage = new BufferedImage(
+                targetWidth,
+                targetHeight,
+                (src.getTransparency() == Transparency.OPAQUE ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB)
+        );
+        //Le crop part toujours du centre de l'image (amplitude variable en fonction des target dimensions fournies)
+        int sourceX = Math.round((float) (currentWidth - targetWidth) / 2);
+        int sourceY = Math.round((float) (currentHeight - targetHeight) / 2);
+
+        Graphics2D graphics2D = croppedImage.createGraphics();
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.drawImage(
+                src,
+                0,
+                0,
+                targetWidth,
+                targetHeight,
+                sourceX,
+                sourceY,
+                sourceX + targetWidth,
+                sourceY + targetHeight,
+                null
+        );
+        graphics2D.dispose();
+        src.flush();
+
+        return croppedImage;
     }
 }

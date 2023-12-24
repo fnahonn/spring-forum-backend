@@ -20,8 +20,8 @@ import java.io.IOException;
 @RequestMapping("/api/v1/profile")
 public class AvatarProfileController {
 
-    final int TARGET_HEIGHT = 100;
-    final int TARGET_WIDTH = 100;
+    final int TARGET_HEIGHT = 150;
+    final int TARGET_WIDTH = 150;
     @Autowired
     UploadService uploadService;
     @Autowired
@@ -33,7 +33,7 @@ public class AvatarProfileController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> uploadImage(@NotNull(message = "avatarImage file is null") @RequestBody MultipartFile avatarImage, Authentication auth) throws IOException {
 
-        File uploadedFile = profileService.uploadImage(avatarImage, TARGET_WIDTH, TARGET_HEIGHT, auth);
+        File uploadedFile = profileService.uploadImage(avatarImage, TARGET_WIDTH, TARGET_HEIGHT, true, auth);
 
 
         return ResponseEntity.ok(String.format("New image uploaded at : %s", uploadedFile.getAbsolutePath()));

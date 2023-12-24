@@ -35,13 +35,13 @@ public class ProfileService {
         this.imageService = imageService;
     }
 
-    public File uploadImage(MultipartFile avatarImage, int targetWidth, int targetHeight, final Authentication auth) throws IOException {
+    public File uploadImage(MultipartFile avatarImage, int targetWidth, int targetHeight, boolean cropped, final Authentication auth) throws IOException {
 
         if (avatarImage.isEmpty()) {
             throw new IOException("No file found");
         }
 
-        BufferedImage resizedImage = imageService.resize(avatarImage, targetWidth, targetHeight);
+        BufferedImage resizedImage = imageService.resize(avatarImage, targetWidth, targetHeight, cropped);
 
         User hydratedUser = findById(((User) auth.getPrincipal()).getId());
 
