@@ -87,10 +87,12 @@ public class ImageService {
             }
             File outputFile = destinationImage.toFile();
 
-            boolean write = ImageIO.write(imageToUpload, uploadUtils.getExtension(originalFileName), outputFile);
-
-            if (!write) {
-                throw new IOException("An error occured during image upload");
+            try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                boolean write = ImageIO.write(imageToUpload, uploadUtils.getExtension(originalFileName), fos);
+                
+                if (!write) {
+                    throw new IOException("An error occured during image upload");
+                }
             }
             return outputFile;
 
@@ -176,7 +178,7 @@ public class ImageService {
             incrementCount++;
         }
 
-        log.info("Ended in {} increments", incrementCount);
+        log.info("Resized in {} increments", incrementCount);
 
         return src;
     }
