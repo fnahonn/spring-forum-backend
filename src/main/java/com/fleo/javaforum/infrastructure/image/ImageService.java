@@ -41,6 +41,9 @@ public class ImageService {
                 throw new IllegalArgumentException("Incorrect image size");
             }
             originalImage = ImageIO.read(inputStream);
+        } catch (IOException e) {
+            log.error("An error occurred reading file from request", e);
+            throw new RuntimeException("Failed to store file", e);
         }
 
         float ratio = (float) originalImage.getWidth() / (float) originalImage.getHeight();
